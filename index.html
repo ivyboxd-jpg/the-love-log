@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Love Log</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Caveat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #ffffff;
+            color: #000;
+            padding-top: 60px; /* Account for fixed top bar */
+        }
+        .top-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f8f8;
+            padding: 12px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e5e5e7;
+        }
+        .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000000;
+            position: relative;
+        }
+        .clock {
+            font-size: 16px;
+            font-weight: 500;
+            color: #000; /* iOS default text color */
+        }
+        .container {
+            text-align: center;
+            padding-top: 20px;
+        }
+        .app-icons {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        .ios-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 80px;
+            transition: all 0.2s ease;
+        }
+        .icon-bg {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            background-color: rgba(229,229,234,1);
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.1),
+                inset 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        .ios-icon img {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        .ios-icon:hover {
+            transform: scale(1.05);
+        }
+        .ios-icon p {
+            font-size: 12px;
+            color: #000;
+            margin: 0;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .window {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+            width: 85%;
+            max-width: 400px;
+            max-height: 80%;
+            overflow: auto;
+            z-index: 1000;
+        }
+        
+        .window.certificate-window {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .window-controls {
+            display: flex;
+            gap: 5px;
+        }
+        .control {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .red { background-color: #ff605c; }
+        .yellow { background-color: #ffbd44; }
+        .green { background-color: #00ca4e; }
+        .window-content {
+            padding: 20px;
+        }
+        .certificate {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border: 1px solid #000;
+            font-family: 'Playfair Display', serif;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+        .certificate p {
+            padding: 10px;
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+        .notes-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .note {
+            position: absolute;
+            width: 200px;
+            padding: 15px;
+            background-color: #fef08a;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            font-family: 'Caveat', cursive;
+            transform: rotate(-5deg);
+            pointer-events: auto;
+        }
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="title">The Love Log</div>
+        <div style="position: absolute; left: 20px;">💖</div> <!-- Added cute emoji -->
+        <div class="clock" id="clock" style="position: absolute; right: 20px; font-size: 14px; font-weight: 500; color: #3a3a3c;">11:42am</div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome to the Girlfriend Terminal.</h1>
+        <p>You are my favorite celebration.</p>
+        <div class="app-icons">
+            <div class="ios-icon" onclick="openMailWindow()">
+                <div class="icon-bg">
+                    <img src="https://img.icons8.com/ios-filled/96/007AFF/mail.png" alt="Mail">
+                </div>
+                <p>Mail</p>
+            </div>
+            <div class="ios-icon" onclick="openCertificateWindow()">
+                <div class="icon-bg">
+                    <img src="https://img.icons8.com/ios-filled/96/FF9500/medal2.png" alt="Award">
+                </div>
+                <p>Awards</p>
+            </div>
+            <div class="ios-icon" onclick="openHeartApp()">
+                <div class="icon-bg">
+                    <img src="https://img.icons8.com/ios-filled/96/FF2D55/like.png" alt="Sweet Nothings">
+                </div>
+                <p>Nothings</p>
+            </div>
+        </div>
+        <div class="footer">To the moon and back.</div>
+    </div>
+
+    <div class="window" id="mailWindow">
+        <div class="window-header">
+            <div>Mail</div>
+            <div class="window-controls">
+                <div class="control red" onclick="closeMailWindow()"></div>
+                <div class="control yellow"></div>
+                <div class="control green"></div>
+            </div>
+        </div>
+        <div class="window-content">
+            <p><strong>From:</strong> nivchhasatia&lt;admin@myheart.io&gt;</p>
+            <p><strong>To:</strong> my beautiful girlfriend</p>
+            <p><strong>Subject:</strong> happy national girlfriend’s day &lt;3</p>
+            <p>
+                i know national girlfriend’s day isn’t a real holiday, but i’m gonna treat it like one because you are worth celebrating every single day. 
+                i’ll never get tired of telling you that. you’re the most amazing girlfriend i could’ve ever hoped for. 
+                i love the way you laugh at my lame jokes (i’m your lame lamb) even when they’re not funny, especially then. 
+                and how you get all excited when you talk about wheel of time, or that look in your eyes when you talk about people you love, 
+                like you carry them with you all the time. i love the little things about you as well like how you drink diet coke even though it bubbles in your nose 
+                (and i know it’s just because i like it). or how you get so stubborn about pasta shapes like it’s a personal battle. 
+                or how you keep talking about biology concepts like they’re poetry, and i could just listen to your voice for hours. 
+                you’re not just my girlfriend. you’re my favorite human. my safe place. my best friend. and being loved by you is something i’ll never get over. 
+                you have this heart that feels endless. sometimes i don’t know how you do it. i want to spend my whole life protecting that heart, loving it the way it deserves. 
+                you give me strength when i feel small. you remind me why i’m doing this life at all and no matter how hard a day gets, or how much the world wants from me 
+                i know if i land in your arms, i’ll be okay. to you i can admit that i’m just too soft for all of it. 
+                i know you’ll still be there. and i’ll fall apart like a shawarma. and you’ll still love me. you gave me that sense of security. 
+                you help me feel safe without making me feel guilty for needing that safety. i love how we talk about the future — about ivy, stitch, jackie and wilson. 
+                about our kids and how we’ll adopt them, the little family we’ll build. about not leaving the bed. about being tired together. 
+                i know, without question, that you’ll be there holding my hand through everything. surgeries, bad days, everything and i want you to know that i’ll do the same. 
+                no matter how rough it gets, i’ll stay. i’ll hold your hand. i’ll be by your side. we’ll figure it out. you’re never gonna face this world alone, 
+                not while i’m around. even if you’re mad. even if i’m mad. especially then. i’ll still show up. you can always expect it. 
+                you make me want to work on myself, to build something good, for you and for us. even on my darkest days, you’re the reason i get up. 
+                and i hope i make you feel safe. i hope i make you feel as loved as you make me feel, because that’s all i want.
+                i love your nerdiness, your warmth, your fire, your heart. i love the way you talk, the way you dream, the way you exist like you’re the only person 
+                who could make my life feel this full. i’ll never get tired of hearing you rant about people in your school or argue about pasta shapes or make fun of me 
+                for acting like a baby when code output doesn’t work. you’re funny. you’re brilliant. you’re so resilient, so sweet, so deeply kind. 
+                you’re stunning, gorgeous, unbelievably hot and i fall in love with you every single day. the way you make me laugh. the way you give me butterflies. 
+                every little thing between us is sacred to me.
+                <br><br>
+                you’re the love of my life.<br>
+                happy national girlfriend’s day, aaradhya kashyap chhasatia.<br>
+                i hope this makes you feel just a tiny bit of the love you give me, every single day.
+            </div>
+            <div style="text-align: left; padding-left: 20px; margin-top: 20px;">
+                <p class="footer" style="display: inline; font-style: italic;">sent with all my love (noah kahan reference).</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="window certificate-window" id="certificateWindow">
+        <div class="window-header">
+            <div>Best Girlfriend Award</div>
+            <div class="window-controls">
+                <div class="control red" onclick="closeCertificateWindow()"></div>
+                <div class="control yellow"></div>
+                <div class="control green"></div>
+            </div>
+        </div>
+        <div class="window-content certificate">
+            <h2 style="font-size: 24px; margin: 10px 0; letter-spacing: 2px; text-transform: uppercase;">Certificate of Excellence</h2>
+            <p style="margin: 5px 0;">Awarded To:</p>
+            <p style="font-size: 22px; font-weight: bold; margin: 10px 0; border-bottom: 1px solid #000; padding-bottom: 10px; width: 100%;">Aaradhya Kashyap Chhasatia</p>
+            <p style="margin: 15px 0;">For extraordinary devotion, care, and making every day meaningful</p>
+            <p style="font-style: italic; margin: 15px 0;">"You make my world brighter"</p>
+            <div style="margin: 0;">
+                <p style="border-top: 1px solid #000; padding-top: 8px; margin: 20px 0 0 0;">1st August 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Convert 0 to 12
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}${ampm.toLowerCase()}`; // e.g. "11:42am"
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function openMailWindow() {
+            document.getElementById('mailWindow').style.display = 'block';
+        }
+
+        function closeMailWindow() {
+            document.getElementById('mailWindow').style.display = 'none';
+        }
+
+        function openCertificateWindow() {
+            document.getElementById('certificateWindow').style.display = 'block';
+        }
+
+        function closeCertificateWindow() {
+            document.getElementById('certificateWindow').style.display = 'none';
+        }
+
+        function openHeartApp() {
+            const messages = [
+                "You're my favorite thought of the day",
+                "Your smile lights up my world",
+                "I'm so lucky to have you",
+                "You make ordinary moments magical",
+                "Thinking of you makes me happy",
+                "You're my safe place",
+                "I love how you understand me",
+                "Your kindness inspires me",
+                "You're my favorite hello and hardest goodbye",
+                "Every moment with you is precious",
+                "You make my heart happy",
+                "I cherish our inside jokes",
+                "Your love is my greatest gift",
+                "You make the world feel right",
+                "I'm grateful for you every day"
+            ];
+            
+            // Create notes container if it doesn't exist
+            let container = document.querySelector('.notes-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'notes-container';
+                document.body.appendChild(container);
+            }
+
+            // Create sticky note
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.textContent = messages[Math.floor(Math.random() * messages.length)];
+            note.style.left = `${Math.random() * 70 + 10}%`;
+            note.style.top = `${Math.random() * 70 + 10}%`;
+            note.style.transform = `rotate(${Math.random() * 10 - 5}deg)`;
+            container.appendChild(note);
+
+            // Create floating heart
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '❤️';
+            heart.style.left = `${Math.random() * 80 + 10}%`;
+            heart.style.top = `${Math.random() * 80 + 10}%`;
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 3000);
+
+            // Automatically remove note after some time
+            setTimeout(() => note.remove(), 5000);
+        }
+    </script>
+</body>
+</html>
